@@ -14,14 +14,17 @@ class TestHTMLNode(unittest.TestCase):
         output = "HTMLNode(None, This is just text, None, None)"
         self.assertNotEqual(repr(node), output)
 
-    def test_props_to_html(self):
-        props = {
-            "href": "https://www.google.com",
-            "target": "_blank",
-        }
-        node = HTMLNode("a", "Link Text", None, props)
-        output = 'HTMLNode(a, Link Text, None, href="https://www.google.com" target="_blank")'
-        self.assertEqual(repr(node), output)
+    def test_repr(self):
+        node = HTMLNode(
+            "a",
+            "Link Text",
+            None,
+            {"href":"https://www.google.com", "target":"_blank"},
+        )
+        self.assertEqual(
+            node.__repr__(),
+            "HTMLNode(a, Link Text, None, {'href': 'https://www.google.com', 'target': '_blank'})",
+        )
 
     def test_not_implemented_error(self):
         node = HTMLNode(None, "Test")
@@ -48,6 +51,7 @@ class TestLeafNode(unittest.TestCase):
         with self.assertRaises(ValueError) as context:
             node.to_html()
         self.assertEqual(str(context.exception), "All leaf nodes require a value")
+
 
 class TestParentNode(unittest.TestCase):
     def test_parent_to_html(self):
@@ -91,7 +95,6 @@ class TestParentNode(unittest.TestCase):
         }
         parent_node = ParentNode("ul", [child_node], parent_props)
         self.assertEqual(parent_node.to_html(), '<ul class="navbar"><li class="navitem"><a class="navlink" href="www.google.com">Link Text</a></li></ul>')
-
 
     def test_parent_to_html_no_tag_value_error(self):
         child_nodes = [

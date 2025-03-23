@@ -2,6 +2,7 @@ from textnode import TextNode, TextType
 
 from htmlnode import HTMLNode
 
+
 def main():
     text_node = TextNode("Some Text Here", TextType.TEXT)
     url_node = TextNode("A link to my site", TextType.LINK, "https://edward-vonschondorf.dev/" )
@@ -17,6 +18,7 @@ def main():
     print(html_node)
     print(html_node_2)
     print(html_node_3)
+
 
 if __name__ == "__main__":
     main()
