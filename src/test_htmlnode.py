@@ -114,5 +114,6 @@ class TestParentNode(unittest.TestCase):
             node.to_html()
         self.assertEqual(str(context.exception), "Parent node requires children")
 
+
 if __name__ == "__main__":
     unittest.main()
