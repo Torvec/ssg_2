@@ -1,6 +1,6 @@
 import unittest
 
-from htmlnode import HTMLNode, LeafNode
+from htmlnode import HTMLNode, LeafNode, ParentNode
 
 
 class TestHTMLNode(unittest.TestCase):
@@ -31,7 +31,7 @@ class TestHTMLNode(unittest.TestCase):
 
 
 class TestLeafNode(unittest.TestCase):
-    def test_leaf_to_html_p(self):
+    def test_leaf_to_html(self):
         node = LeafNode("p", "Hello, world!")
         self.assertEqual(node.to_html(), "<p>Hello, world!</p>")
 
@@ -47,7 +47,69 @@ class TestLeafNode(unittest.TestCase):
         node = LeafNode("b", None)
         with self.assertRaises(ValueError) as context:
             node.to_html()
-        self.assertEqual(str(context.exception), "All leaf nodes must have a value")
+        self.assertEqual(str(context.exception), "All leaf nodes require a value")
+
+class TestParentNode(unittest.TestCase):
+    def test_parent_to_html(self):
+        child_nodes = [
+            LeafNode("b", "Bold text"),
+            LeafNode(None, "Normal text"),
+            LeafNode("i", "italic text"),
+            LeafNode(None, "Normal text"),
+        ]
+        node = ParentNode("p", child_nodes)
+        self.assertEqual(node.to_html(), "<p><b>Bold text</b>Normal text<i>italic text</i>Normal text</p>")
+
+    def test_parent_to_html_with_props(self):
+        child_props = {
+            "class": "todo"
+        }
+        child_nodes = [
+            LeafNode("li", "Do this", child_props),
+            LeafNode("li", "Do that", child_props),
+            LeafNode("li", "Do something else", child_props),
+            LeafNode("li", "Do another thing", child_props),
+        ]
+        props = {
+            "class": "toDoList",
+        }
+        node = ParentNode("ul", child_nodes, props)
+        self.assertEqual(node.to_html(), '<ul class="toDoList"><li class="todo">Do this</li><li class="todo">Do that</li><li class="todo">Do something else</li><li class="todo">Do another thing</li></ul>')
+
+    def test_parent_to_html_with_grandchildren(self):
+        grandchild_props = {
+            "class": "navlink",
+            "href": "www.google.com"
+        }
+        grandchild_node = LeafNode("a", "Link Text", grandchild_props)
+        child_props = {
+            "class": "navitem"
+        }
+        child_node = ParentNode("li", [grandchild_node], child_props)
+        parent_props = {
+            "class": "navbar"
+        }
+        parent_node = ParentNode("ul", [child_node], parent_props)
+        self.assertEqual(parent_node.to_html(), '<ul class="navbar"><li class="navitem"><a class="navlink" href="www.google.com">Link Text</a></li></ul>')
+
+
+    def test_parent_to_html_no_tag_value_error(self):
+        child_nodes = [
+            LeafNode("b", "Bold text"),
+            LeafNode(None, "Normal text"),
+            LeafNode("i", "italic text"),
+            LeafNode(None, "Normal text"),
+        ]
+        node = ParentNode(None, child_nodes)
+        with self.assertRaises(ValueError) as context:
+            node.to_html()
+        self.assertEqual(str(context.exception), "Parent node requires a tag")
+
+    def test_parent_to_html_no_children_value_error(self):
+        node = ParentNode("b", None)
+        with self.assertRaises(ValueError) as context:
+            node.to_html()
+        self.assertEqual(str(context.exception), "Parent node requires children")
 
 if __name__ == "__main__":
     unittest.main()
