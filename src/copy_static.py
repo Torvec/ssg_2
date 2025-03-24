@@ -3,25 +3,15 @@ import shutil
 import os
 
 
-def copy_static_files(source, destination):
-    if not os.path.exists(source):
-        os.mkdir(source)  
-    if os.path.exists(destination):
-        shutil.rmtree(destination)
-        os.mkdir(destination)
-    else:
-        os.mkdir(destination)
-    get_all_items(source, destination)
-    
+def copy_files_r(source_dir_path, dest_dir_path):
+    if not os.path.exists(dest_dir_path):
+        os.mkdir(dest_dir_path)
 
-def get_all_items(source, destination):
-    source_items = os.listdir(source)
-    for item in source_items:
-        source_path = os.path.join(source, item)
-        destination_path = os.path.join(destination, item)
-        if os.path.isdir(source_path):
-            if not os.path.exists(destination_path):
-                os.mkdir(destination_path)
-            get_all_items(source_path, destination_path)
-        elif os.path.isfile(source_path):
-            shutil.copy(source_path, destination_path)
+    for filename in os.listdir(source_dir_path):
+        from_path = os.path.join(source_dir_path, filename)
+        dest_path = os.path.join(dest_dir_path, filename)
+        print(f" * {from_path} -> {dest_path}")
+        if os.path.isfile(from_path):
+            shutil.copy(from_path, dest_path)
+        else:
+            copy_files_r(from_path, dest_path)

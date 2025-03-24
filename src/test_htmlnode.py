@@ -6,12 +6,12 @@ from htmlnode import HTMLNode, LeafNode, ParentNode
 class TestHTMLNode(unittest.TestCase):
     def test_eq(self):
         node = HTMLNode(None, "This is just text")
-        output = "HTMLNode(None, This is just text, None, None)"
+        output = "HTMLNode(None, This is just text, children: None, None)"
         self.assertEqual(repr(node), output)
 
     def test_not_eq(self):
         node = HTMLNode("p", "This is paragraph text")
-        output = "HTMLNode(None, This is just text, None, None)"
+        output = "HTMLNode(None, This is just text, children: None, None)"
         self.assertNotEqual(repr(node), output)
 
     def test_repr(self):
@@ -23,14 +23,14 @@ class TestHTMLNode(unittest.TestCase):
         )
         self.assertEqual(
             node.__repr__(),
-            "HTMLNode(a, Link Text, None, {'href': 'https://www.google.com', 'target': '_blank'})",
+            "HTMLNode(a, Link Text, children: None, {'href': 'https://www.google.com', 'target': '_blank'})",
         )
 
     def test_not_implemented_error(self):
         node = HTMLNode(None, "Test")
         with self.assertRaises(NotImplementedError) as context:
             node.to_html()
-        self.assertEqual(str(context.exception), "child classes will implement this method")
+        self.assertEqual(str(context.exception), "to_html method not implemented")
 
 
 class TestLeafNode(unittest.TestCase):
@@ -50,7 +50,7 @@ class TestLeafNode(unittest.TestCase):
         node = LeafNode("b", None)
         with self.assertRaises(ValueError) as context:
             node.to_html()
-        self.assertEqual(str(context.exception), "All leaf nodes require a value")
+        self.assertEqual(str(context.exception), "invalid HTML: no value")
 
 
 class TestParentNode(unittest.TestCase):
@@ -106,13 +106,13 @@ class TestParentNode(unittest.TestCase):
         node = ParentNode(None, child_nodes)
         with self.assertRaises(ValueError) as context:
             node.to_html()
-        self.assertEqual(str(context.exception), "Parent node requires a tag")
+        self.assertEqual(str(context.exception), "invalid HTML: no tag")
 
     def test_parent_to_html_no_children_value_error(self):
         node = ParentNode("b", None)
         with self.assertRaises(ValueError) as context:
             node.to_html()
-        self.assertEqual(str(context.exception), "Parent node requires children")
+        self.assertEqual(str(context.exception), "invalid HTML: no children")
 
 
 if __name__ == "__main__":
