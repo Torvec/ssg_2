@@ -3,6 +3,21 @@ import os
 from block_markdown import markdown_to_htmlnode
 
 
+def generate_pages_r(dir_path_content, template_path, dest_dir_path):
+    source_content = os.listdir(dir_path_content)
+    for item in source_content:
+        content_path = os.path.join(dir_path_content, item)
+        if os.path.isdir(content_path):
+            new_dest_path = os.path.join(dest_dir_path, item)
+            if not os.path.exists(new_dest_path):
+                os.mkdir(new_dest_path)
+            generate_pages_r(content_path, template_path, new_dest_path)
+        elif item.endswith(".md"):
+            html_name = item.replace(".md", ".html")
+            final_path = os.path.join(dest_dir_path, html_name)
+            generate_page(content_path, template_path, final_path)
+
+
 def generate_page(from_path, template_path, dest_path):
     print(f" * {from_path} {template_path} -> {dest_path}")
     from_file = open(from_path, "r")
